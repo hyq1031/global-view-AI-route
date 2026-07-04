@@ -614,7 +614,10 @@ export class Globe {
   _resize() {
     const w = this.container.clientWidth || 1
     const h = this.container.clientHeight || 1
-    this.renderer.setSize(w, h, false)
+    // updateStyle must stay true: without CSS width/height the canvas displays
+    // at its buffer size (container × devicePixelRatio), overflowing the card
+    // on any dpr>1 screen and pushing the globe off toward the bottom-right.
+    this.renderer.setSize(w, h)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
 
