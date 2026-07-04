@@ -27,6 +27,7 @@ export default async function handler(req, res) {
     console.error('[opensky-api]', err.message + cause)
     res.status(err.status === 429 ? 429 : 502).json({
       error: err.message + cause,
+      region: process.env.VERCEL_REGION ?? null,
       ...(err.retryAfterSeconds != null ? { retryAfterSeconds: err.retryAfterSeconds } : {}),
       ...(client.creditsRemaining != null ? { creditsRemaining: client.creditsRemaining } : {}),
     })
