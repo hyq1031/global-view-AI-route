@@ -16,6 +16,11 @@ full architecture; this file is for gotchas that aren't obvious from reading the
   endpoint exists twice: dev Vite middleware (`server/openskyProxy.js`) and Vercel function
   (`api/opensky/states.js`) — shared logic is in `server/openskyCore.js`, change it there.
   `OPENSKY_CLIENT_ID`/`OPENSKY_CLIENT_SECRET` must be set in the Vercel project env vars.
+- **Live flight data does not work from Vercel and this is not a code bug**: TCP connects
+  to opensky-network.org (194.209.200.34) time out (`UND_ERR_CONNECT_TIMEOUT`) from both
+  iad1 and fra1 — OpenSky appears to filter cloud egress, consistent with their
+  non-operational-use ToS. The hosted demo intentionally falls back to trial routes with a
+  friendly message; live mode is local-dev only. Don't burn time re-debugging this.
 
 ## OpenSky API — don't guess, check openskynetwork.github.io/opensky-api/rest.html
 - Credits are per-endpoint-bucket; `/states/all` costs 1-4 credits depending on bounding-box
