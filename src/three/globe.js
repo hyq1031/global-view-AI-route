@@ -184,6 +184,7 @@ export class Globe {
     this.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
     this.dist = DIST_DEFAULT
     this.targetDist = DIST_DEFAULT
+    this.fitScale = 1 // recomputed in _resize for narrow/portrait containers
     this.camera.position.set(0, 0, this.dist)
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -584,7 +585,7 @@ export class Globe {
     }
     this._onWheel = (e) => {
       e.preventDefault()
-      this.targetDist = clamp(this.targetDist + e.deltaY * 0.0016, DIST_MIN, DIST_MAX)
+      this.targetDist = clamp(this.targetDist + e.deltaY * 0.0016, DIST_MIN * this.fitScale, DIST_MAX * this.fitScale)
       this.lastInteract = performance.now()
     }
 
@@ -616,6 +617,20 @@ export class Globe {
     this.renderer.setSize(w, h, false)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
+
+    // PerspectiveCamera fov is vertical-only: on narrow/portrait containers the
+    // horizontal FOV shrinks below the globe's angular size and crops it at the
+    // sides. Scale all camera distances so the sphere keeps the same apparent
+    // size relative to the narrower axis instead.
+    const vHalf = (this.camera.fov / 2) * DEG
+    const hHalf = Math.atan(Math.tan(vHalf) * this.camera.aspect)
+    const fit = Math.max(1, Math.sin(vHalf) / Math.sin(Math.min(vHalf, hHalf)))
+    const prev = this.fitScale
+    if (fit !== prev) {
+      this.fitScale = fit
+      this.targetDist *= fit / prev
+      this.dist *= fit / prev
+    }
   }
 
   _frame() {
@@ -703,11 +718,11 @@ export class Globe {
   }
 
   zoomIn() {
-    this.targetDist = clamp(this.targetDist - 0.75, DIST_MIN, DIST_MAX)
+    this.targetDist = clamp(this.targetDist - 0.75 * this.fitScale, DIST_MIN * this.fitScale, DIST_MAX * this.fitScale)
   }
 
   zoomOut() {
-    this.targetDist = clamp(this.targetDist + 0.75, DIST_MIN, DIST_MAX)
+    this.targetDist = clamp(this.targetDist + 0.75 * this.fitScale, DIST_MIN * this.fitScale, DIST_MAX * this.fitScale)
   }
 
   recenter() {
@@ -730,7 +745,7 @@ export class Globe {
     this.rotY = ty + delta
     this.velX = 0
     this.velY = 0
-    this.targetDist = DIST_DEFAULT
+    this.targetDist = DIST_DEFAULT * this.fitScale
     this.recentering = true
     this.lastInteract = performance.now()
   }
