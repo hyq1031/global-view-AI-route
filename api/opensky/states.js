@@ -21,9 +21,12 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-store')
     res.status(200).json(data)
   } catch (err) {
-    console.error('[opensky-api]', err.message)
+    // undici wraps network errors as bare "fetch failed" — the actionable
+    // detail (DNS, TLS, timeout, ECONNREFUSED) lives in err.cause.
+    const cause = err.cause ? ` (${err.cause.code || err.cause.message || err.cause})` : ''
+    console.error('[opensky-api]', err.message + cause)
     res.status(err.status === 429 ? 429 : 502).json({
-      error: err.message,
+      error: err.message + cause,
       ...(err.retryAfterSeconds != null ? { retryAfterSeconds: err.retryAfterSeconds } : {}),
       ...(client.creditsRemaining != null ? { creditsRemaining: client.creditsRemaining } : {}),
     })
