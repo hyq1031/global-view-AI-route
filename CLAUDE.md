@@ -12,6 +12,10 @@ full architecture; this file is for gotchas that aren't obvious from reading the
   `public/**` textures are exempted.
 - Windows/PowerShell environment — use the PowerShell tool for npm/build commands, not
   POSIX-only syntax.
+- Deployed to Vercel (global-view-ai-route.vercel.app) via GitHub integration. The OpenSky
+  endpoint exists twice: dev Vite middleware (`server/openskyProxy.js`) and Vercel function
+  (`api/opensky/states.js`) — shared logic is in `server/openskyCore.js`, change it there.
+  `OPENSKY_CLIENT_ID`/`OPENSKY_CLIENT_SECRET` must be set in the Vercel project env vars.
 
 ## OpenSky API — don't guess, check openskynetwork.github.io/opensky-api/rest.html
 - Credits are per-endpoint-bucket; `/states/all` costs 1-4 credits depending on bounding-box
