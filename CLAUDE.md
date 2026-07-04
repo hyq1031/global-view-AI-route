@@ -7,8 +7,9 @@ full architecture; this file is for gotchas that aren't obvious from reading the
 - `npm run dev` starts Vite **and** the OpenSky proxy middleware together (same process).
 - **Restart the dev server** (don't rely on HMR) after editing `.env.local` or
   `vite.config.js` — env vars are only read at process startup.
-- Not yet a git repository. Don't assume `git status`/`git diff` workflows apply until
-  `git init` happens.
+- Git repository with remote `origin` → github.com/hyq1031/global-view-AI-route (branch
+  `main`). Root-level `*.jpg`/`*.png` are gitignored (verification screenshots);
+  `public/**` textures are exempted.
 - Windows/PowerShell environment — use the PowerShell tool for npm/build commands, not
   POSIX-only syntax.
 
