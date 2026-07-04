@@ -1,0 +1,10 @@
+node_modules
+dist
+.env.local
+.env.*.local
+
+# verification screenshots — not source assets
+*.jpg
+*.png
+!public/**
+.claude/scheduled_tasks.lock

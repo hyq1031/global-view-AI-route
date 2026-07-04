@@ -1,0 +1,76 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+:root {
+  --page-bg: #e1e3e9;
+  --card-bg: #f4f5f8;
+  --text-1: #16203c;
+  --text-2: #5b6474;
+  --text-3: #a8aebc;
+  --accent: #4f6ed9;
+  --green: #16a34a;
+  --yellow: #f6c51c;
+  --divider: rgba(22, 32, 60, 0.07);
+  --control-bg: #ffffff;
+  --control-fg: #26314f;
+  --control-shadow: 0 4px 16px rgba(25, 35, 70, 0.16), 0 1px 3px rgba(25, 35, 70, 0.08);
+  --pill-track: #e8eaf0;
+  --card-shadow: 0 40px 80px -32px rgba(25, 35, 70, 0.35), 0 12px 30px rgba(25, 35, 70, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(22, 32, 60, 0.08);
+  --globe-glow: rgba(125, 180, 255, 0.55);
+  --howit-bg: transparent;
+  --row-line: rgba(22, 32, 60, 0.06);
+  --chip-bg: rgba(22, 32, 60, 0.05);
+}
+
+[data-theme='night'] {
+  --page-bg: #1f2a4e;
+  --card-bg: #0c142d;
+  --text-1: #f3f6ff;
+  --text-2: #9aa6c5;
+  --text-3: #4c5878;
+  --accent: #7f9bf5;
+  --green: #3bd47f;
+  --divider: rgba(255, 255, 255, 0.06);
+  --control-bg: rgba(255, 255, 255, 0.09);
+  --control-fg: #e8edfb;
+  --control-shadow: 0 4px 16px rgba(0, 0, 10, 0.45);
+  --pill-track: rgba(255, 255, 255, 0.09);
+  --card-shadow: 0 40px 90px -30px rgba(0, 0, 12, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --glass-bg: rgba(12, 20, 45, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --globe-glow: rgba(20, 115, 255, 0.5);
+  --howit-bg: rgba(255, 255, 255, 0.07);
+  --row-line: rgba(255, 255, 255, 0.06);
+  --chip-bg: rgba(255, 255, 255, 0.06);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter Variable', Inter, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.theme-fade {
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease,
+    border-color 0.6s ease,
+    box-shadow 0.6s ease,
+    background 0.6s ease;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  border: 1px solid var(--glass-border);
+}
