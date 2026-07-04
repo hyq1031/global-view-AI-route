@@ -43,8 +43,10 @@ export default function OptionsSheet({
 
   return (
     <div className="sm:hidden">
+      {/* Bottom-left, sharing the bottom row with the centered 3D/2D toggle and
+          the zoom controls on the right — centered here overlaps the toggle. */}
       <div
-        className={`fixed inset-x-0 z-50 flex justify-center ${open || hidden ? 'invisible' : ''}`}
+        className={`fixed inset-x-0 z-50 flex justify-start pl-4 ${open || hidden ? 'invisible' : ''}`}
         style={{ bottom: 'calc(4.75rem + env(safe-area-inset-bottom))' }}
       >
         <motion.button

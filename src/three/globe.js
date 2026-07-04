@@ -550,18 +550,42 @@ export class Globe {
   _bindEvents() {
     const el = this.renderer.domElement
     this._last = { x: 0, y: 0 }
+    this._pointers = new Map() // pointerId -> {x, y}; two entries = pinch
+    this._pinchDist = 0
 
     this._onDown = (e) => {
-      this.dragging = true
+      this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      el.setPointerCapture(e.pointerId)
       this.recentering = false
       this.velX = 0
       this.velY = 0
-      this._last = { x: e.clientX, y: e.clientY }
-      el.setPointerCapture(e.pointerId)
-      el.style.cursor = 'grabbing'
       this.lastInteract = performance.now()
+      if (this._pointers.size === 2) {
+        // second finger down: stop rotating, start pinch-zoom
+        this.dragging = false
+        const [a, b] = [...this._pointers.values()]
+        this._pinchDist = Math.hypot(a.x - b.x, a.y - b.y)
+      } else if (this._pointers.size === 1) {
+        this.dragging = true
+        this._last = { x: e.clientX, y: e.clientY }
+        el.style.cursor = 'grabbing'
+      }
     }
     this._onMove = (e) => {
+      if (this._pointers.has(e.pointerId)) {
+        this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      }
+      if (this._pointers.size === 2) {
+        const [a, b] = [...this._pointers.values()]
+        const d = Math.hypot(a.x - b.x, a.y - b.y)
+        if (this._pinchDist > 0 && d > 0) {
+          // fingers apart -> smaller dist -> zoom in, matching native pinch
+          this.targetDist = clamp(this.targetDist * (this._pinchDist / d), DIST_MIN * this.fitScale, DIST_MAX * this.fitScale)
+        }
+        this._pinchDist = d
+        this.lastInteract = performance.now()
+        return
+      }
       if (this.dragging) {
         const dx = e.clientX - this._last.x
         const dy = e.clientY - this._last.y
@@ -578,8 +602,18 @@ export class Globe {
       this._updatePointerLatLng(e)
     }
     this._onUp = (e) => {
-      this.dragging = false
-      el.style.cursor = 'grab'
+      this._pointers.delete(e.pointerId)
+      if (this._pointers.size === 1) {
+        // pinch ended with one finger still down: hand off to drag without a jump
+        const [p] = this._pointers.values()
+        this._last = { x: p.x, y: p.y }
+        this.dragging = true
+        this._pinchDist = 0
+      } else if (this._pointers.size === 0) {
+        this.dragging = false
+        this._pinchDist = 0
+        el.style.cursor = 'grab'
+      }
       this.lastInteract = performance.now()
       if (el.hasPointerCapture?.(e.pointerId)) el.releasePointerCapture(e.pointerId)
     }
